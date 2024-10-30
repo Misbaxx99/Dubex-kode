@@ -1,0 +1,62 @@
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+# Eksempeldata til demonstration (brug dit eget datasæt her)
+# Data består af hændelsesegenskaber og en label (1 = reel trussel, 0 = falsk alarm)
+data = pd.DataFrame({
+    'feature1': np.random.rand(1000),
+    'feature2': np.random.rand(1000),
+    'feature3': np.random.rand(1000),
+    'label': np.random.choice([0, 1], size=1000, p=[0.7, 0.3])  # 70% falske alarmer, 30% reelle trusler
+})
+
+# Split data i features og labels
+X = data[['feature1', 'feature2', 'feature3']]
+y = data['label']
+
+# Split data i trænings- og testdatasæt
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialiser og træn en Random Forest Classifier
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Lav prædiktioner på testdata
+y_pred = model.predict(X_test)
+
+# Evaluer modelens nøjagtighed
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Automatiseret incident response baseret på modelprediktioner
+def automated_incident_response(event_features):
+    """
+    Funktion til at håndtere hændelser automatisk baseret på modelprediktioner.
+    event_features: Liste af hændelsesegenskaber
+    """
+    prediction = model.predict([event_features])[0]
+    
+    if prediction == 1:
+        print("Reel trussel registreret! Iværksætter incident response.")
+        # Foruddefineret respons (eksempel)
+        trigger_response()
+    else:
+        print("Falsk alarm identificeret. Ingen handling nødvendig.")
+
+def trigger_response():
+    """
+    Foruddefineret respons til reelle trusler.
+    """
+    print("Incident response aktiveret: Følgende foranstaltninger implementeres:")
+    print("- Netværksisolering af påvirkede systemer")
+    print("- Blokering af mistænkelige IP-adresser")
+    print("- Underretning af sikkerhedsteamet")
+
+# Eksempel på brug
+new_event = [0.45, 0.22, 0.67]  # Fiktive data for en ny hændelse
+automated_incident_response(new_event)
+
+
